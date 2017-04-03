@@ -32,7 +32,6 @@ public class SharedStorageWorkspaceCleanup extends AsyncPeriodicWork {
   @Override
   public long getRecurrencePeriod() {
     //The periodic cleanup runs every hour
-//    return 60 * 60 * 1000L;
-    return 60 * 1000L;
+    return 60 * 60 * 1000L;
   }
 }

@@ -198,6 +198,5 @@ class SharedStorageWorkspaceManager implements Saveable {
    * The token that combines the project name and unique number to create unique workspace directory.
    */
   private static final String COMBINATOR = SystemProperties.getString(SharedStorageWorkspaceManager.class.getName(), "@");
-//  private static final long DAYS_30_IN_MILLIS = 30 * 24 * 60 * 60 * 1000L;
-  private static final long DAYS_30_IN_MILLIS = 60 * 60 * 1000L;
+  private static final long DAYS_30_IN_MILLIS = 30 * 24 * 60 * 60 * 1000L;
 }
