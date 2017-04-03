@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.sharedstorageworkspace;
 
 import hudson.Extension;
 import hudson.model.Node;
+import hudson.model.Slave;
 import jenkins.model.NodeListener;
 
 import javax.annotation.Nonnull;
@@ -21,24 +22,30 @@ public class SharedStorageWorkspaceNodeListener extends NodeListener {
 
   @Override
   protected void onDeleted(@Nonnull Node node) {
-    String workspace = SharedStorageWorkspaceManager.getSharedStorageWorkspaceManager().deallocateRootPath(node);
-    LOGGER.info("The node - " + node.getDisplayName() + " is being deleted and the corresponding mapping to workspace " + workspace + "is removed");
+    if (node instanceof Slave) {
+      String workspace = SharedStorageWorkspaceManager.getSharedStorageWorkspaceManager().deallocateRootPath(node);
+      LOGGER.info("The node - " + node.getDisplayName() + " is being deleted and the corresponding mapping to workspace " + workspace + "is removed");
+    }
 
     super.onDeleted(node);
   }
 
   @Override
   protected void onUpdated(@Nonnull Node oldOne, @Nonnull Node newOne) {
-    String workspace = SharedStorageWorkspaceManager.getSharedStorageWorkspaceManager().reallocateRootPath(oldOne, newOne);
-    LOGGER.info("The node " + oldOne.getDisplayName() + " is being updated and hence the workspace mapping is updated to " + workspace);
+    if (oldOne instanceof Slave && newOne instanceof Slave) {
+      String workspace = SharedStorageWorkspaceManager.getSharedStorageWorkspaceManager().reallocateRootPath(oldOne, newOne, ((Slave) oldOne).getRemoteFS());
+      LOGGER.info("The node " + oldOne.getDisplayName() + " is being updated and hence the workspace mapping is updated to " + workspace);
+    }
 
     super.onUpdated(oldOne, newOne);
   }
 
   @Override
   protected void onCreated(@Nonnull Node node) {
-    String workspace = SharedStorageWorkspaceManager.getSharedStorageWorkspaceManager().allocateRootPath(node);
-    LOGGER.info("The node - " + node.getDisplayName() + " is mapped to the workspace - " + workspace);
+    if (node instanceof Slave) {
+      String workspace = SharedStorageWorkspaceManager.getSharedStorageWorkspaceManager().allocateRootPath(node, ((Slave) node).getRemoteFS());
+      LOGGER.info("The node - " + node.getDisplayName() + " is mapped to the workspace - " + workspace);
+    }
 
     super.onCreated(node);
   }
